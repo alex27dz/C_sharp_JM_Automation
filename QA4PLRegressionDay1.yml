@@ -1,0 +1,18 @@
+# QA4 Ecomm
+trigger: none
+pr: none
+
+schedules:
+- cron: "0 9 * * *"
+  displayName: Daily day build
+  always: true
+  branches:
+    include:
+    - develop
+
+jobs:
+- template: TestTemplate.yml
+  parameters:
+    test: 'TestCategory=gwsmoketest'
+    environment: 'qa4'
+    pool: 'JM-QA-PL'

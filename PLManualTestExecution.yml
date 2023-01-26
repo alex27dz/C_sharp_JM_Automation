@@ -1,0 +1,63 @@
+  
+
+parameters:
+  - name: test
+    displayName: Filter criteria
+    type: string
+    default: 'Name~JMPG_Smoke_Test_UI_Validation'
+    values:
+      - 'FullyQualifiedName~JMPG'
+      - 'Name~JMPG_Smoke_Test_UI_Validation'
+      - 'Name~JMPG_Smoke_Test_UI_Validation_Chrome'
+      - 'Name~_Super_QAPMGEICO_OFF'
+      - 'Name~_Super_QAPMGEICO_ON'
+      - 'Name~_BOLT'
+      - 'Name~JMPG_Bulk_Upload_Progress_Bar'
+      - 'Name~_TS01_PJPA_CreatePLPolicy'
+      - 'TestCategory=pjpasmoketest'
+      - 'All'
+  - name: environment
+    displayName: Enviroment Configuration
+    type: string
+    default: 'stage'
+    values:
+      - 'stage'
+      - 'qa15'
+      - 'qa4'
+
+trigger: none
+pr: none
+
+pool:
+  name: 'JM-PG-P-BPA'
+  
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+- task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+
+- task: VSBuild@1
+  inputs:
+    solution: '**\*.sln'
+    vsVersion: '16.0'
+    platform: 'Any CPU'
+    configuration: ${{ parameters.environment }}
+
+- task: VSTest@2
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: |
+      **\${{parameters.environment}}\*.dll
+      !**\obj\**
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    testRunTitle: 'Filter: ${{parameters.test}} Environment: ${{parameters.environment}}'
+    vsTestVersion: '16.0'
+    ${{ if ne(parameters.test, 'All') }}:
+      testFiltercriteria: ${{ parameters.test }}

@@ -1,0 +1,18 @@
+# QA4 Ecomm
+trigger: none
+pr: none
+
+schedules:
+- cron: "0 9 * * *"
+  displayName: Daily day build
+  always: true
+  branches:
+    include:
+    - develop
+
+jobs:
+- template: TestTemplate.yml
+  parameters:
+    test: 'TestCategory=AIRegression|TestCategory=AP_QAreg|TestCategory=PLRegressionQA|TestCategory=QCregression|TestCategory=QNA|TestCategory=QAPMregression|TestCategory=Rqna|TestCategory=SuperQAPMregression|TestCategory=RegressionSR'
+    environment: 'qa4'
+    pool: 'JM-QA-Ecomm'

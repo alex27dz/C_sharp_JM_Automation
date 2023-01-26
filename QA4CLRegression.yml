@@ -1,0 +1,9 @@
+# QA4 CL Regression
+trigger: none
+pr: none
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'

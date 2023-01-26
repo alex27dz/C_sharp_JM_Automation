@@ -1,0 +1,50 @@
+parameters:
+  - name: test
+    displayName: Filter criteria
+    type: string
+    default: 'Name~JMPG_Smoke_Test_UI_Validation'
+  - name: environment
+    displayName: Enviroment Configuration
+    type: string
+    default: 'stage'
+    values:
+      - 'stage'
+      - 'qa15'
+      - 'qa4'
+  - name: pool
+    displayName: Pool name
+    type: string
+    default: 'JM-QA-Ecomm'
+
+jobs:
+- job: RunTests
+  timeoutInMinutes: 120
+  pool:
+    name: ${{ parameters.pool }}
+  steps:
+  - task: NuGetToolInstaller@1
+
+  - task: NuGetCommand@2
+    inputs:
+      restoreSolution: '**/*.sln'
+
+  - task: VSBuild@1
+    inputs:
+      solution: '**\*.sln'
+      vsVersion: '16.0'
+      platform: 'Any CPU'
+      configuration: ${{ parameters.environment }}
+
+  - task: VSTest@2
+    inputs:
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: |
+        **\${{parameters.environment}}\*.dll
+        !**\obj\**
+      #runSettingsFile: JMPGTestSuites\test.runsettings
+      #overrideTestrunParameters: '-UserName $(JMPG_Portal_Stage_Username) -Password $(JMPG_Portal_Stage_Password)'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      testRunTitle: 'Filter: ${{parameters.test}} Environment: ${{parameters.environment}}'
+      vsTestVersion: '16.0'
+      ${{ if ne(parameters.test, 'All') }}:
+        testFiltercriteria: ${{ parameters.test }}

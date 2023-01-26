@@ -1,0 +1,18 @@
+# STAGE Ecomm
+trigger: none
+pr: none
+
+schedules:
+- cron: "0 9 * * *"
+  displayName: Daily day build
+  always: true
+  branches:
+    include:
+    - develop
+
+jobs:
+- template: TestTemplate.yml
+  parameters:
+    test: 'TestCategory=AIRegression|TestCategory=APreg|TestCategory=BoltregressionStage|TestCategory=PLRegressionQA|TestCategory=QCregression|TestCategory=QNA|TestCategory=QAPMregression|TestCategory=Rqna|TestCategory=SuperQAPMregression|TestCategory=RegressionSR|TestCategory=qbp'
+    environment: 'stage'
+    pool: 'JM-QA-Ecomm'
